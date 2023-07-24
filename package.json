@@ -14,11 +14,11 @@
 		"cors": "^2.8.1",
 		"dotenv": "^8.2.0",
 		"express": "^4.14.0",
-		"helmet": "^3.23.3",
+		"helmet": "^3.1.0",
 		"mocha": "^3.2.0",
 		"mongodb": "^5.7.0",
-		"moongose": "^1.0.0",
-		"nodemon": "^3.0.1"
+		"mongoose": "^6.8.4",
+		"nodemon": "^2.0.7"
 	},
 	"repository": {
 		"type": "git",

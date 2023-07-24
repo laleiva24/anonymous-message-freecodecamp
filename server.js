@@ -21,9 +21,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(helmet.frameguard());
 app.use(
-  helmet({
-    referrePolicy: { policy: "same-origin" },
-  })
+  helmet ({
+    referrerPolicy: { policy: "same-origin" },
+    })
 );
 app.use(helmet.dnsPrefetchControl());
 

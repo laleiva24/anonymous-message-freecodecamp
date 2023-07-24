@@ -1,35 +1,87 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const mongoose = require("mongoose")
 
-const date = new Date();
+const replySchema = new mongoose.Schema({
+  text: {
+    type: String,
+    required: true,
+  },
+  created_on: {
+    type: Date,
+    required: true,
+    default: new Date(),
+  },
+  reported: {
+    type: Boolean,
+    default: false,
+  },
+  delete_password: {
+    type: String,
+    required: true,
+  },
+})
 
-const ReplySchema = new Schema({
-  text: { type: String },
-  delete_password: { type: String },
-  created_on: { type: Date, default: date },
-  bumped_on: { type: Date, default: date },
-  reported: { type: Boolean, default: false },
-});
+const threadSchema = new mongoose.Schema({
+  board: {
+    type: String,
+    required: true
+  },
+  text: {
+    type: String,
+    required: true,
+  },
+  created_on: {
+    type: Date,
+    required: true,
+    default: new Date(),
+  },
+  bumped_on: {
+    type: Date,
+    required: true,
+    default: new Date(),
+  },
+  reported: {
+    type: Boolean,
+    default: false,
+  },
+  delete_password: {
+    type: String,
+    required: true,
+  },
+  replies: [replySchema],
+})
 
-const Reply = mongoose.model("Reply", ReplySchema);
+const Thread = mongoose.model("Thread", threadSchema)
+const Reply = mongoose.model("Reply", replySchema)
 
-const ThreadSchema = new Schema({
-  text: { type: String },
-  delete_password: { type: String },
-  reported: { type: Boolean, default: false },
-  created_on: { type: Date, default: date },
-  bumped_on: { type: Date, default: date },
-  replies: [ReplySchema],
-});
+const getThreadId = async (text, delete_password) => {
+  let thread = await Thread.findOne({ text: text ? text : "test", delete_password: delete_password ? delete_password : "test" })
+  if (!thread) {
+    thread = await Thread.create({
+      board: "test",
+      text: "test",
+      delete_password: "test",
+      replies: []
+    })
+  }
 
-const Thread = mongoose.model("Thread", ThreadSchema);
+  return thread
+}
 
-const BoardSchema = new Schema({
-  name: { type: String },
-  threads: [ThreadSchema],
-});
+const getReplyId = async (thread_id) => {
+  let thread = await Thread.findById(thread_id)
+  let reply = thread.replies.length > 0 ? thread.replies[0] : ""
+  if (!reply) {
+    reply = new Reply({
+      text: "test",
+      created_on: new Date(),
+      reported: false,
+      delete_password: "test",
+    })
+    thread.replies.push(reply)
+    thread = await thread.save()
+    reply = thread.replies[0]
+  }
+  return reply
+}
 
-const Board = mongoose.model("Board", BoardSchema);
-
-module.exports = { Board, Thread, Reply };
-
+module.exports = { Thread, Reply, getThreadId, getReplyId }
